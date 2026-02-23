@@ -23,18 +23,24 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-          # Fixed Cython version to avoid compatibility issues
           pip install --upgrade Cython==0.29.33 virtualenv buildozer
 
-      - name: Build APK with Buildozer (With Auto-Retry)
+      - name: Build APK with Buildozer
         run: |
-          # Agar Google server 500 error de toh yeh code 3 dafa khud try karega
+          # Smart Auto-Retry Loop
           for i in {1..3}; do
-            buildozer android debug && break || echo "Download failed due to server error, retrying in 10 seconds..." && sleep 10;
+            if buildozer android debug; then
+              echo "Build Successful!"
+              exit 0
+            fi
+            echo "Attempt $i failed due to server timeout. Retrying in 10 seconds..."
+            sleep 10
           done
+          echo "Build completely failed after 3 attempts."
+          exit 1
 
-      - name: Upload APK Artifact
+      - name: Upload APK Artifact (Smart Search)
         uses: actions/upload-artifact@v4
         with:
           name: WirelessGamepad-APK
-          path: bin/*.apk
+          path: "**/*.apk"
