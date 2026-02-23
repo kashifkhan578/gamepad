@@ -13,6 +13,8 @@ fullscreen = 1
 android.permissions = INTERNET, VIBRATE
 android.archs = arm64-v8a, armeabi-v7a
 android.allow_backup = True
+android.accept_sdk_license = True
+android.api = 34
 
 [buildozer]
 log_level = 2
